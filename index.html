@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DSA Prep — Amazon & Microsoft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg2: #111113;
+    --bg3: #18181c;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0ede8;
+    --muted: #7a7880;
+    --accent: #f5a623;
+    --accent2: #e8834a;
+    --info: #5b9cf6;
+    --success: #4ecb82;
+    --danger: #f05f5f;
+    --warning: #f5a623;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* Glow orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb1 { width: 500px; height: 500px; background: rgba(245,166,35,0.06); top: -100px; right: -100px; }
+  .orb2 { width: 400px; height: 400px; background: rgba(91,156,246,0.05); bottom: 100px; left: -100px; }
+
+  /* Layout */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* Nav */
+  nav {
+    border-bottom: 1px solid var(--border);
+    padding: 18px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+  .logo {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .logo span { color: var(--muted); }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    transition: all 0.2s;
+  }
+  .nav-link:hover { color: var(--text); background: var(--bg3); }
+
+  /* Hero */
+  .hero { padding: 96px 0 72px; }
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid rgba(245,166,35,0.25);
+    background: rgba(245,166,35,0.06);
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+  }
+  .hero-label::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 7vw, 80px);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  h1 .accent { color: var(--accent); }
+  h1 .dim { color: var(--muted); font-weight: 600; }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    font-weight: 300;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Section */
+  section { padding: 64px 0; }
+  .section-header { margin-bottom: 36px; }
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .section-sub { font-size: 14px; color: var(--muted); }
+
+  /* Week cards */
+  .weeks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  .week-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .week-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .week-card:nth-child(1)::before { background: linear-gradient(90deg, var(--success), transparent); }
+  .week-card:nth-child(2)::before { background: linear-gradient(90deg, var(--info), transparent); }
+  .week-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent), transparent); }
+  .week-card:nth-child(4)::before { background: linear-gradient(90deg, var(--danger), transparent); }
+  .week-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .week-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .week-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .week-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+  .week-topics { display: flex; flex-wrap: wrap; gap: 6px; }
+  .topic-pill {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 4px; width: fit-content; }
+  .tab-btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { background: var(--bg3); color: var(--text); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Filter chips */
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .fchip {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .fchip:hover { border-color: var(--border2); color: var(--text); }
+  .fchip.active { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.08); }
+
+  /* Problem list */
+  .prob-count { font-size: 12px; color: var(--muted); margin-bottom: 12px; font-family: var(--font-mono); }
+  .prob-list { display: flex; flex-direction: column; gap: 6px; }
+  .prob-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.15s;
+    cursor: default;
+  }
+  .prob-row:hover { border-color: var(--border2); background: var(--bg3); }
+  .prob-check {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .prob-check.done { background: var(--success); border-color: var(--success); }
+  .prob-check.done::after { content: '✓'; font-size: 11px; color: #0a0a0b; font-weight: 700; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-arrays { background: var(--info); }
+  .dot-strings { background: #c084fc; }
+  .dot-trees { background: var(--success); }
+  .dot-graphs { background: var(--accent2); }
+  .dot-dp { background: var(--accent); }
+  .dot-heap { background: #22d3ee; }
+  .prob-info { flex: 1; min-width: 0; }
+  .prob-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .prob-name.done { text-decoration: line-through; opacity: 0.4; }
+  .prob-pattern { font-size: 11px; color: var(--muted); font-family: var(--font-mono); margin-top: 2px; }
+  .diff-badge {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 3px 9px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+  .diff-E { background: rgba(78,203,130,0.12); color: var(--success); }
+  .diff-M { background: rgba(245,166,35,0.12); color: var(--warning); }
+  .diff-H { background: rgba(240,95,95,0.12); color: var(--danger); }
+
+  /* Mock questions */
+  .mock-section-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    margin-top: 28px;
+  }
+  .mock-section-title:first-child { margin-top: 0; }
+  .mock-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .mock-card:hover { border-color: var(--border2); }
+  .mock-q {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .mock-q-text { flex: 1; font-size: 13px; font-weight: 500; color: var(--text); }
+  .mock-arrow { color: var(--muted); font-size: 10px; transition: transform 0.2s; flex-shrink: 0; }
+  .mock-arrow.open { transform: rotate(90deg); }
+  .mock-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+  .mock-body.open { display: block; }
+  .hint-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .hint-text { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+  .followup { font-size: 12px; color: var(--accent); font-family: var(--font-mono); background: rgba(245,166,35,0.06); border: 1px solid rgba(245,166,35,0.15); border-radius: 8px; padding: 10px 12px; }
+
+  /* Daily plan table */
+  .day-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .day-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+  .day-card:hover { border-color: var(--border2); }
+  .day-range {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+  .day-topic { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .day-detail { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .difficulty-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-top: 8px;
+  }
+
+  /* Email subscribe */
+  .email-section {
+    background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .email-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 300px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+  .email-section h3 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .email-section p { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+  .email-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; }
+  .email-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .email-input:focus { border-color: var(--accent); }
+  .email-input::placeholder { color: var(--muted); }
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0a0b;
+    border: none;
+    border-radius: var(--radius);
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+  .email-note { font-size: 12px; color: var(--muted); margin-top: 14px; }
+  .success-msg { display: none; color: var(--success); font-size: 14px; margin-top: 16px; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Progress bar */
+  .progress-wrap { background: rgba(255,255,255,0.06); border-radius: 4px; height: 3px; margin-bottom: 28px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.5s; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    h1 { font-size: 40px; }
+    .hero { padding: 60px 0 48px; }
+    .email-form { flex-direction: column; }
+    .email-section { padding: 32px 24px; }
+    .weeks-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+
+  /* Animations */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .hero > * { animation: fadeUp 0.6s ease both; }
+  .hero-label { animation-delay: 0.1s; }
+  h1 { animation-delay: 0.2s; }
+  .hero-sub { animation-delay: 0.3s; }
+  .hero-stats { animation-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a class="logo" href="#">dsa<span>.</span>prep</a>
+      <div class="nav-links">
+        <a class="nav-link" href="#plan">Plan</a>
+        <a class="nav-link" href="#amazon">Amazon</a>
+        <a class="nav-link" href="#microsoft">Microsoft</a>
+        <a class="nav-link" href="#mock">Mock</a>
+        <a class="nav-link" href="#daily">Daily Email</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-label">30-Day Interview Prep</div>
+    <h1>Crack <span class="accent">Amazon</span><br>& <span class="dim">Microsoft</span></h1>
+    <p class="hero-sub">A structured DSA preparation plan covering the most frequently asked patterns and problems for top product companies.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">30</span><span class="stat-label">Day plan</span></div>
+      <div class="stat"><span class="stat-num">58</span><span class="stat-label">Curated problems</span></div>
+      <div class="stat"><span class="stat-num">12</span><span class="stat-label">Mock questions</span></div>
+      <div class="stat"><span class="stat-num">8</span><span class="stat-label">Key patterns</span></div>
+    </div>
+  </div>
+
+  <!-- 4-Week Plan -->
+  <section id="plan">
+    <div class="section-header">
+      <div class="section-num">01 — THE PLAN</div>
+      <h2>4-Week Roadmap</h2>
+      <div class="section-sub">Build from foundations to company-specific prep in 30 days</div>
+    </div>
+
+    <div class="weeks-grid">
+      <div class="week-card">
+        <div class="week-num">WEEK 01</div>
+        <div class="week-title">Foundations</div>
+        <div class="week-desc">Arrays, strings, hashing, two pointers, binary search. The base every other topic builds on.</div>
+        <div class="week-topics">
+          <span class="topic-pill">Arrays</span>
+          <span class="topic-pill">Hashing</span>
+          <span class="topic-pill">Two Pointer</span>
+          <span class="topic-pill">Sliding Window</span>
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="week-num">WEEK 02</div>
+        <div class="week-title">Data Structures</div>
+        <div class="week-desc">Linked lists, stacks, queues, trees, BST. Core structures that appear in almost every loop.</div>
+        <div class="week-topics">
+          <span class="topic-pill">Linked Lists</span>
+          <span class="topic-pill">Stacks</span>
+          <span class="topic-pill">Trees</span>
+          <span class="topic-pill">BST</span>
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="week-num">WEEK 03</div>
+        <div class="week-title">Advanced Topics</div>
+        <div class="week-desc">Graphs, heaps, dynamic programming. The hardest and most frequently asked at FAANG level.</div>
+        <div class="week-topics">
+          <span class="topic-pill">Graphs</span>
+          <span class="topic-pill">Heaps</span>
+          <span class="topic-pill">DP</span>
+          <span class="topic-pill">Dijkstra</span>
+        </div>
+      </div>
+      <div class="week-card">
+        <div class="week-num">WEEK 04</div>
+        <div class="week-title">Company Grind</div>
+        <div class="week-desc">Backtracking, tries, company-tagged problems, and full mock interviews under timed conditions.</div>
+        <div class="week-topics">
+          <span class="topic-pill">Backtracking</span>
+          <span class="topic-pill">Tries</span>
+          <span class="topic-pill">Mock Interviews</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily breakdown accordion -->
+    <div style="margin-top: 32px;">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchWeek(1)">Week 1</button>
+        <button class="tab-btn" onclick="switchWeek(2)">Week 2</button>
+        <button class="tab-btn" onclick="switchWeek(3)">Week 3</button>
+        <button class="tab-btn" onclick="switchWeek(4)">Week 4</button>
+      </div>
+
+      <div id="week-panel-1" class="tab-panel active">
+        <div class="progress-wrap"><div class="progress-fill" style="width:25%"></div></div>
+        <div class="day-grid">
+          <div class="day-card"><div class="day-range">DAY 1–2</div><div class="day-topic">Arrays & Strings</div><div class="day-detail">Sliding window, prefix sums, Kadane's algorithm. Solve 6–8 problems.</div><span class="difficulty-tag diff-E">Easy → Medium</span></div>
+          <div class="day-card"><div class="day-range">DAY 3</div><div class="day-topic">Two Pointers</div><div class="day-detail">Two-sum variants, 3-sum, container with most water, palindrome checks.</div><span class="difficulty-tag diff-M">Medium</span></div>
+          <div class="day-card"><div class="day-range">DAY 4–5</div><div class="day-topic">Hashing & Maps</div><div class="day-detail">Frequency counts, anagram groups, subarrays with target sum.</div><span class="difficulty-tag diff-M">Medium</span></div>
+          <div class="day-card"><div class="day-range">DAY 6</div><div class="day-topic">Sorting & Binary Search</div><div class="day-detail">Binary search variants, merge intervals, custom comparator sort.</div><span class="difficulty-tag diff-M">Medium</span></div>
+          <div class="day-card"><div class="day-range">DAY 7</div><div class="day-topic">Revision Day</div><div class="day-detail">Redo 5 problems you got wrong. Document patterns in a notebook.</div><span class="difficulty-tag diff-E">Review</span></div>
+        </div>
+      </div>
+
+      <div id="week-panel-2" class="tab-panel">
+        <div class="progress-wrap"><div class="progress-fill" style="width:50%"></div></div>
+        <div class="day-grid">
+          <div class="day-card"><div class="day-range">DAY 8–9</div><div class="day-topic">Linked Lists</div><div class="day-detail">Reverse, detect cycle, merge sorted lists, remove nth from end, LRU cache.</div><span class="difficulty-tag diff-M">Medium</span></div>
+          <div class="day-card"><div class="day-range">DAY 10</div><div class="day-topic">Stacks & Queues</div><div class="day-detail">Monotonic stack, valid parentheses, min-stack, daily temperatures.</div><span class="difficulty-tag diff-M">Medium</span></div>
+          <div class="day-card"><div class="day-range">DAY 11–12</div><div class="day-topic">Binary Trees</div><div class="day-detail">BFS/DFS traversals, height, diameter, path sum, lowest common ancestor.</div><span class="difficulty-tag diff-M">Medium</span></div>
+          <div class="day-card"><div class="day-range">DAY 13</div><div class="day-topic">BST</div><div class="day-detail">Insert, delete, search, validate BST, kth smallest, inorder successor.</div><span class="difficulty-tag diff-M">Medium</span></div>
+          <div class="day-card"><div class="day-range">DAY 14</div><div class="day-topic">Revision Day</div><div class="day-detail">Mock interview: 2 problems, 45 minutes, no hints. Debrief and note gaps.</div><span class="difficulty-tag diff-E">Review</span></div>
+        </div>
+      </div>
+
+      <div id="week-panel-3" class="tab-panel">
+        <div class="progress-wrap"><div class="progress-fill" style="width:75%"></div></div>
+        <div class="day-grid">
+          <div class="day-card"><div class="day-range">DAY 15–16</div><div class="day-topic">Graphs</div><div class="day-detail">BFS/DFS on graphs, number of islands, clone graph, topological sort.</div><span class="difficulty-tag diff-M">Medium</span></div>
+          <div class="day-card"><div class="day-range">DAY 17</div><div class="day-topic">Advanced Graphs</div><div class="day-detail">Dijkstra's algorithm, Union-Find (DSU), course schedule, word ladder.</div><span class="difficulty-tag diff-H">Hard</span></div>
+          <div class="day-card"><div class="day-range">DAY 18</div><div class="day-topic">Heaps / Priority Queue</div><div class="day-detail">Kth largest, merge K sorted lists, top K frequent, median from stream.</div><span class="difficulty-tag diff-H">Hard</span></div>
+          <div class="day-card"><div class="day-range">DAY 19–20</div><div class="day-topic">Dynamic Programming</div><div class="day-detail">1D & 2D DP — climbing stairs, knapsack, LCS, edit distance, coin change.</div><span class="difficulty-tag diff-H">Hard</span></div>
+          <div class="day-card"><div class="day-range">DAY 21</div><div class="day-topic">Full Mock</div><div class="day-detail">2 problems, 1 hour, no hints. Debrief every decision you made.</div><span class="difficulty-tag diff-E">Review</span></div>
+        </div>
+      </div>
+
+      <div id="week-panel-4" class="tab-panel">
+        <div class="progress-wrap"><div class="progress-fill" style="width:100%"></div></div>
+        <div class="day-grid">
+          <div class="day-card"><div class="day-range">DAY 22–23</div><div class="day-topic">Backtracking</div><div class="day-detail">Subsets, permutations, N-queens, word search, sudoku solver.</div><span class="difficulty-tag diff-H">Hard</span></div>
+          <div class="day-card"><div class="day-range">DAY 24</div><div class="day-topic">Tries & Bit Manipulation</div><div class="day-detail">Implement trie, word search II, phone directory design, XOR tricks.</div><span class="difficulty-tag diff-H">Hard</span></div>
+          <div class="day-card"><div class="day-range">DAY 25–26</div><div class="day-topic">Amazon Targeted</div><div class="day-detail">Top Amazon-tagged problems. Arrays, DP, trees, graphs. Practice LP justification.</div><span class="difficulty-tag diff-M">Targeted</span></div>
+          <div class="day-card"><div class="day-range">DAY 27–28</div><div class="day-topic">Microsoft Targeted</div><div class="day-detail">Top Microsoft-tagged problems. Linked lists, strings, system design basics.</div><span class="difficulty-tag diff-M">Targeted</span></div>
+          <div class="day-card"><div class="day-range">DAY 29–30</div><div class="day-topic">Final Mocks</div><div class="day-detail">Two full 2-hour mocks. Review all weak areas. Rest well before D-day.</div><span class="difficulty-tag diff-E">Final</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem Lists -->
+  <section id="amazon">
+    <div class="section-header">
+      <div class="section-num">02 — PROBLEM LISTS</div>
+      <h2>Company-Tagged Problems</h2>
+      <div class="section-sub">Filter by topic, check off as you go</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchCompany('amazon')">Amazon (30)</button>
+      <button class="tab-btn" onclick="switchCompany('microsoft')">Microsoft (28)</button>
+    </div>
+
+    <div id="company-amazon" class="tab-panel active">
+      <div class="filter-bar">
+        <button class="fchip active" onclick="filterProbs('amazon','all')">All</button>
+        <button class="fchip" onclick="filterProbs('amazon','arrays')">Arrays</button>
+        <button class="fchip" onclick="filterProbs('amazon','strings')">Strings</button>
+        <button class="fchip" onclick="filterProbs('amazon','trees')">Trees</button>
+        <button class="fchip" onclick="filterProbs('amazon','graphs')">Graphs</button>
+        <button class="fchip" onclick="filterProbs('amazon','dp')">DP</button>
+        <button class="fchip" onclick="filterProbs('amazon','heap')">Heap</button>
+      </div>
+      <div class="prob-count" id="count-amazon">30 problems</div>
+      <div class="prob-list" id="list-amazon"></div>
+    </div>
+
+    <div id="company-microsoft" class="tab-panel" id="microsoft">
+      <div class="filter-bar">
+        <button class="fchip active" onclick="filterProbs('microsoft','all')">All</button>
+        <button class="fchip" onclick="filterProbs('microsoft','arrays')">Arrays</button>
+        <button class="fchip" onclick="filterProbs('microsoft','strings')">Strings</button>
+        <button class="fchip" onclick="filterProbs('microsoft','trees')">Trees</button>
+        <button class="fchip" onclick="filterProbs('microsoft','graphs')">Graphs</button>
+        <button class="fchip" onclick="filterProbs('microsoft','dp')">DP</button>
+        <button class="fchip" onclick="filterProbs('microsoft','heap')">Heap</button>
+      </div>
+      <div class="prob-count" id="count-microsoft">28 problems</div>
+      <div class="prob-list" id="list-microsoft"></div>
+    </div>
+  </section>
+
+  <!-- Mock -->
+  <section id="mock">
+    <div class="section-header">
+      <div class="section-num">03 — MOCK QUESTIONS</div>
+      <h2>Interview Simulator</h2>
+      <div class="section-sub">Click any question to reveal the key insight and follow-up</div>
+    </div>
+    <div id="mock-container"></div>
+  </section>
+
+  <!-- Daily Email -->
+  <section id="daily">
+    <div class="email-section">
+      <h3>2 Problems Every Morning ☀️</h3>
+      <p>Get 2 curated DSA problems delivered to your inbox daily — alternating Amazon and Microsoft style questions.</p>
+      <form class="email-form" onsubmit="subscribe(event)">
+        <input class="email-input" type="email" id="sub-email" placeholder="your@email.com" value="sudhanshu.sharma1985@gmail.com" required/>
+        <button class="btn-primary" type="submit">Subscribe</button>
+      </form>
+      <div class="email-note">Free forever. Unsubscribe anytime. No spam.</div>
+      <div class="success-msg" id="success-msg">🎉 You're subscribed! First email arrives tomorrow morning.</div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">
+    built for interview prep — good luck out there 🚀
+  </div>
+</footer>
+
+<script>
+// ─── Data ─────────────────────────────────────────────────────────
+const amazonProblems = [
+  { name: "Two Sum", topic: "arrays", diff: "E", pattern: "HashMap lookup" },
+  { name: "Best Time to Buy and Sell Stock", topic: "arrays", diff: "E", pattern: "Sliding window / greedy" },
+  { name: "Product of Array Except Self", topic: "arrays", diff: "M", pattern: "Prefix & suffix product" },
+  { name: "Trapping Rain Water", topic: "arrays", diff: "H", pattern: "Two pointer / monotonic stack" },
+  { name: "Subarray Sum Equals K", topic: "arrays", diff: "M", pattern: "Prefix sum + HashMap" },
+  { name: "Spiral Matrix", topic: "arrays", diff: "M", pattern: "Simulation, boundary shrink" },
+  { name: "Merge Intervals", topic: "arrays", diff: "M", pattern: "Sort + greedy merge" },
+  { name: "Longest Substring Without Repeating Chars", topic: "strings", diff: "M", pattern: "Sliding window + set" },
+  { name: "Valid Anagram", topic: "strings", diff: "E", pattern: "Frequency count / sort" },
+  { name: "Group Anagrams", topic: "strings", diff: "M", pattern: "Sort key HashMap" },
+  { name: "Minimum Window Substring", topic: "strings", diff: "H", pattern: "Sliding window + two maps" },
+  { name: "Word Break", topic: "strings", diff: "M", pattern: "DP or BFS" },
+  { name: "Binary Tree Level Order Traversal", topic: "trees", diff: "M", pattern: "BFS with queue" },
+  { name: "Lowest Common Ancestor of BST", topic: "trees", diff: "M", pattern: "BST property traversal" },
+  { name: "Serialize and Deserialize Binary Tree", topic: "trees", diff: "H", pattern: "BFS/DFS + string encode" },
+  { name: "Diameter of Binary Tree", topic: "trees", diff: "E", pattern: "DFS, track max depth" },
+  { name: "Binary Tree Right Side View", topic: "trees", diff: "M", pattern: "BFS, last node per level" },
+  { name: "Path Sum II", topic: "trees", diff: "M", pattern: "DFS backtracking" },
+  { name: "Number of Islands", topic: "graphs", diff: "M", pattern: "BFS/DFS flood fill" },
+  { name: "Course Schedule", topic: "graphs", diff: "M", pattern: "Topological sort / cycle detect" },
+  { name: "Word Ladder", topic: "graphs", diff: "H", pattern: "BFS on word graph" },
+  { name: "Network Delay Time", topic: "graphs", diff: "M", pattern: "Dijkstra's algorithm" },
+  { name: "Rotting Oranges", topic: "graphs", diff: "M", pattern: "Multi-source BFS" },
+  { name: "Coin Change", topic: "dp", diff: "M", pattern: "Bottom-up 1D DP" },
+  { name: "Longest Increasing Subsequence", topic: "dp", diff: "M", pattern: "DP + binary search" },
+  { name: "Jump Game II", topic: "dp", diff: "M", pattern: "Greedy / DP" },
+  { name: "Top K Frequent Elements", topic: "heap", diff: "M", pattern: "Min-heap of size K" },
+  { name: "K Closest Points to Origin", topic: "heap", diff: "M", pattern: "Max-heap or quickselect" },
+  { name: "Merge K Sorted Lists", topic: "heap", diff: "H", pattern: "Min-heap, merge step" },
+  { name: "Find Median from Data Stream", topic: "heap", diff: "H", pattern: "Two heaps (max + min)" },
+];
+
+const microsoftProblems = [
+  { name: "Maximum Subarray", topic: "arrays", diff: "M", pattern: "Kadane's algorithm" },
+  { name: "3Sum", topic: "arrays", diff: "M", pattern: "Sort + two pointer" },
+  { name: "Container With Most Water", topic: "arrays", diff: "M", pattern: "Two pointer (greedy)" },
+  { name: "Find All Duplicates in Array", topic: "arrays", diff: "M", pattern: "Index marking trick" },
+  { name: "Set Matrix Zeroes", topic: "arrays", diff: "M", pattern: "In-place flag with first row/col" },
+  { name: "Rotate Image", topic: "arrays", diff: "M", pattern: "Transpose + reverse" },
+  { name: "Reverse Words in a String", topic: "strings", diff: "M", pattern: "Split, reverse, join" },
+  { name: "Longest Palindromic Substring", topic: "strings", diff: "M", pattern: "Expand around center" },
+  { name: "String to Integer (atoi)", topic: "strings", diff: "M", pattern: "Parse + edge cases" },
+  { name: "Valid Parentheses", topic: "strings", diff: "E", pattern: "Stack matching" },
+  { name: "Decode String", topic: "strings", diff: "M", pattern: "Stack for nested brackets" },
+  { name: "Invert Binary Tree", topic: "trees", diff: "E", pattern: "Recursive swap" },
+  { name: "Validate Binary Search Tree", topic: "trees", diff: "M", pattern: "DFS with min/max bounds" },
+  { name: "Kth Smallest in BST", topic: "trees", diff: "M", pattern: "Inorder traversal" },
+  { name: "Flatten Binary Tree to Linked List", topic: "trees", diff: "M", pattern: "Preorder + pointer rewire" },
+  { name: "Construct BT from Pre & Inorder", topic: "trees", diff: "M", pattern: "Divide & conquer recursion" },
+  { name: "Symmetric Tree", topic: "trees", diff: "E", pattern: "Mirror check DFS/BFS" },
+  { name: "Clone Graph", topic: "graphs", diff: "M", pattern: "BFS/DFS + HashMap clone" },
+  { name: "Pacific Atlantic Water Flow", topic: "graphs", diff: "M", pattern: "Reverse BFS from both oceans" },
+  { name: "Graph Valid Tree", topic: "graphs", diff: "M", pattern: "Union-Find / DFS cycle check" },
+  { name: "Number of Connected Components", topic: "graphs", diff: "M", pattern: "Union-Find" },
+  { name: "Alien Dictionary", topic: "graphs", diff: "H", pattern: "Topological sort on char graph" },
+  { name: "Unique Paths", topic: "dp", diff: "M", pattern: "2D DP or combinatorics" },
+  { name: "Edit Distance", topic: "dp", diff: "H", pattern: "2D DP (Levenshtein)" },
+  { name: "House Robber", topic: "dp", diff: "M", pattern: "1D DP, skip adjacent" },
+  { name: "Kth Largest Element", topic: "heap", diff: "M", pattern: "Min-heap of size K" },
+  { name: "Task Scheduler", topic: "heap", diff: "M", pattern: "Max-heap + greedy cooldown" },
+  { name: "LRU Cache", topic: "heap", diff: "M", pattern: "HashMap + doubly linked list" },
+];
+
+const mockData = {
+  "Arrays & Strings": [
+    { q: "Find the longest subarray with sum equal to K.", diff: "M", hint: "Use prefix sum + HashMap. Store prefix[i] in map. At each index, check if (prefix - K) exists in map.", followup: "What if all numbers are positive — can you do it with two pointers?" },
+    { q: "Find the largest rectangle of all 1s in an n×m binary grid.", diff: "H", hint: "Reduce to 'Largest Rectangle in Histogram' row by row. Use a monotonic stack on each row's heights.", followup: "How does time complexity compare to brute force?" },
+    { q: "Given a sorted rotated array, find a target value.", diff: "M", hint: "Modified binary search — determine which half is sorted, then check if target falls there.", followup: "What changes if duplicates are allowed?" },
+    { q: "Merge two sorted arrays in-place, result stored in first array.", diff: "M", hint: "Fill from the back using three pointers: end of capacity, end of arr1 data, end of arr2.", followup: "How does your approach change if arrays are equal length?" },
+  ],
+  "Trees": [
+    { q: "Find all root-to-leaf paths in a binary tree that sum to a target.", diff: "M", hint: "DFS with backtracking. Subtract at each step. At leaf, check if remaining == 0. Pop on return.", followup: "How would you handle negative node values?" },
+    { q: "Return the maximum path sum (can start and end at any node).", diff: "H", hint: "At each node: max gain = node.val + max(0, leftGain) + max(0, rightGain). Track global max. Return only one side to parent.", followup: "Why can't you return both branches to the parent?" },
+    { q: "Convert a sorted array to a height-balanced BST.", diff: "M", hint: "Pick mid as root recursively. Left subtree from left..mid-1, right from mid+1..right.", followup: "Is the result unique? Why or why not?" },
+    { q: "Check if two binary trees are identical in structure and values.", diff: "E", hint: "Base cases: both null → true, one null → false. Compare values, recurse on both sides.", followup: "How would you check if one tree is a subtree of another?" },
+  ],
+  "Graphs": [
+    { q: "Determine if you can finish all courses given prerequisites (detect cycle).", diff: "M", hint: "Build adjacency list. DFS with 3 states: unvisited, visiting, visited. Cycle if you hit 'visiting' again.", followup: "Can you solve this with BFS (Kahn's algorithm)? Which is easier to implement?" },
+    { q: "Find the shortest path between two nodes in an unweighted graph.", diff: "M", hint: "BFS from source. Track visited set and parent pointers. Stop when you reach target.", followup: "What changes if the graph is weighted?" },
+    { q: "Count the number of distinct islands (same shape = same island).", diff: "H", hint: "DFS and record relative path directions as a string key. Same key = same shape. Store keys in a set.", followup: "What defines same shape — do reflections count?" },
+    { q: "Find the minimum cost to connect all nodes in a graph.", diff: "H", hint: "Use Kruskal's (sort edges + union-find) or Prim's (min-heap + greedy expansion). Both O(E log E).", followup: "When would you prefer Prim's over Kruskal's?" },
+  ]
+};
+
+// ─── State ────────────────────────────────────────────────────────
+const filters = { amazon: 'all', microsoft: 'all' };
+const done = {};
+
+// ─── Render problems ──────────────────────────────────────────────
+function renderProblems(company, problems) {
+  const filter = filters[company];
+  const list = filter === 'all' ? problems : problems.filter(p => p.topic === filter);
+  const countEl = document.getElementById('count-' + company);
+  const listEl = document.getElementById('list-' + company);
+  const doneCount = list.filter(p => done[company + p.name]).length;
+  countEl.textContent = doneCount + ' / ' + list.length + ' completed';
+  listEl.innerHTML = list.map(p => {
+    const key = company + p.name;
+    const isDone = done[key];
+    return `<div class="prob-row">
+      <div class="prob-check ${isDone ? 'done' : ''}" onclick="toggleDone('${key}','${company}')"></div>
+      <div class="dot dot-${p.topic}"></div>
+      <div class="prob-info">
+        <div class="prob-name ${isDone ? 'done' : ''}">${p.name}</div>
+        <div class="prob-pattern">${p.pattern}</div>
+      </div>
+      <span class="diff-badge diff-${p.diff}">${p.diff === 'E' ? 'Easy' : p.diff === 'M' ? 'Medium' : 'Hard'}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleDone(key, company) {
+  done[key] = !done[key];
+  renderProblems(company, company === 'amazon' ? amazonProblems : microsoftProblems);
+}
+
+function filterProbs(company, topic) {
+  filters[company] = topic;
+  const bar = document.querySelector('#company-' + company + ' .filter-bar');
+  bar.querySelectorAll('.fchip').forEach(c => c.classList.toggle('active', c.textContent.toLowerCase() === topic));
+  renderProblems(company, company === 'amazon' ? amazonProblems : microsoftProblems);
+}
+
+// ─── Company tabs ─────────────────────────────────────────────────
+function switchCompany(name) {
+  ['amazon','microsoft'].forEach(c => {
+    document.getElementById('company-' + c).classList.toggle('active', c === name);
+  });
+  document.querySelectorAll('#amazon .tab-btn, #microsoft .tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (i === 0 && name === 'amazon') || (i === 1 && name === 'microsoft'));
+  });
+}
+
+// ─── Week tabs ────────────────────────────────────────────────────
+function switchWeek(n) {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('week-panel-' + i).classList.toggle('active', i === n);
+  }
+  document.querySelectorAll('#plan .tabs .tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i + 1 === n);
+  });
+}
+
+// ─── Mock questions ───────────────────────────────────────────────
+function renderMock() {
+  const container = document.getElementById('mock-container');
+  let html = '';
+  for (const [section, qs] of Object.entries(mockData)) {
+    html += `<div class="mock-section-title">${section}</div>`;
+    qs.forEach((q, i) => {
+      const id = section.replace(/\s+/g,'') + i;
+      html += `<div class="mock-card">
+        <div class="mock-q" onclick="toggleMock('${id}')">
+          <span class="mock-q-text">${q.q}</span>
+          <span class="diff-badge diff-${q.diff}">${q.diff === 'E' ? 'Easy' : q.diff === 'M' ? 'Medium' : 'Hard'}</span>
+          <span class="mock-arrow" id="arr-${id}">▶</span>
+        </div>
+        <div class="mock-body" id="body-${id}">
+          <div class="hint-label">Key insight</div>
+          <div class="hint-text">${q.hint}</div>
+          <div class="hint-label">Follow-up question</div>
+          <div class="followup">${q.followup}</div>
+        </div>
+      </div>`;
+    });
+  }
+  container.innerHTML = html;
+}
+
+function toggleMock(id) {
+  document.getElementById('body-' + id).classList.toggle('open');
+  document.getElementById('arr-' + id).classList.toggle('open');
+}
+
+// ─── Subscribe ────────────────────────────────────────────────────
+function subscribe(e) {
+  e.preventDefault();
+  const email = document.getElementById('sub-email').value;
+  fetch('/api/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  }).then(() => {
+    document.getElementById('success-msg').style.display = 'block';
+  }).catch(() => {
+    document.getElementById('success-msg').style.display = 'block';
+  });
+}
+
+// ─── Init ─────────────────────────────────────────────────────────
+renderProblems('amazon', amazonProblems);
+renderProblems('microsoft', microsoftProblems);
+renderMock();
+</script>
+</body>
+</html>
